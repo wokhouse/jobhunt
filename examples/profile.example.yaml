@@ -1,0 +1,50 @@
+name: example-bay-area
+# Example profile for jobhunt. Copy and edit: slugs are public ATS board names.
+
+boards:
+  greenhouse:
+    - stripe
+    - elastic
+  ashby:
+    - openai
+    - hex
+    - cerebras
+  lever:
+    - dexterity
+  workable:
+    - raydar
+  rippling:
+    - positron
+  workday:
+    - tenant: salesforce
+      site: External_Career_Site
+      host: wd12
+      search: "full stack"
+      max_jobs: 100
+
+criteria:
+  title_include:
+    - engineer
+  title_exclude:
+    - manager
+    - director
+    - vp
+    - intern
+    - new grad
+    - sales
+    - support
+  locations:
+    - san francisco
+    - bay area
+    - remote
+    - united states
+  max_years_required: 6
+  min_salary: 200000
+  require_terms: []
+  any_of_terms:
+    - typescript
+    - react
+    - next.js
+  exclude_terms:
+    - clearance required
+  max_age_days: 45
