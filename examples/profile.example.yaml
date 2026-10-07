@@ -1,5 +1,6 @@
 name: example-bay-area
-# Example profile for jobhunt. Copy and edit: slugs are public ATS board names.
+# Example profile for jobhunt. Copy and edit: board entries are public ATS
+# board names. Any registered (or pip-installed third-party) board works here.
 
 boards:
   greenhouse:
@@ -19,32 +20,51 @@ boards:
     - tenant: salesforce
       site: External_Career_Site
       host: wd12
-      search: "full stack"
+      terms: ["full stack", "frontend", "fullstack"]
       max_jobs: 100
 
-criteria:
-  title_include:
-    - engineer
-  title_exclude:
-    - manager
-    - director
-    - vp
-    - intern
-    - new grad
-    - sales
-    - support
-  locations:
-    - san francisco
-    - bay area
-    - remote
-    - united states
-  max_years_required: 6
-  min_salary: 200000
-  require_terms: []
-  any_of_terms:
-    - typescript
-    - react
-    - next.js
-  exclude_terms:
-    - clearance required
-  max_age_days: 45
+# Ordered filter stages. Each 'name' is a registered filter plugin.
+# Omit 'filters' entirely to get the default single 'criteria' stage.
+filters:
+  - name: criteria
+    title_include:
+      - engineer
+    title_exclude:
+      - manager
+      - director
+      - vp
+      - intern
+      - new grad
+      - sales
+      - support
+    locations:
+      - san francisco
+      - bay area
+      - remote
+      - united states
+    max_years_required: 6
+    min_salary: 200000
+    any_of_terms:
+      - typescript
+      - react
+      - next.js
+    exclude_terms:
+      - clearance required
+    max_age_days: 45
+
+  # Optional second stage: an LLM judge scores the keyword survivors.
+  # base_url is any OpenAI-compatible server (vLLM, llama.cpp, Ollama /v1,
+  # OpenAI, ...). Put the key in an env var, never in this file.
+  # - name: llm_judge
+  #   base_url: http://localhost:8080/v1
+  #   model: my-model
+  #   api_key_env: MY_API_KEY     # only needed by hosted providers
+  #   min_score: 7
+  #   max_jobs: 200
+
+# Free-text rubric sent to the judge. Keep it specific.
+judge_rubric: |
+  Product engineer or full-stack / frontend engineer, mid-to-senior IC
+  (no people-manager roles). SF Bay Area onsite or fully remote.
+  TypeScript + React stack preferred. Strong signal: shipped consumer
+  products, AI-adjacent work.

@@ -1,111 +1,94 @@
-"""jobhunt CLI: fetch boards, match against a profile, verify links."""
+"""jobhunt CLI: fetch boards, run the filter pipeline, verify links."""
 import argparse
 import json
 import sys
 from pathlib import Path
 
-from .fetchers import fetch_all
-from .matcher import dedupe, evaluate
+from .models import Job
+from .pipeline import build_boards, run_pipeline
 from .profile import Profile
+from .registry import BOARDS, FILTERS, JUDGES, load_plugins
 
 
-def _load_jobs(path: Path) -> list[dict]:
-    return json.loads(path.read_text())
+def _rows(jobs: list[Job]) -> list[dict]:
+    rows = []
+    for j in jobs:
+        d = j.to_dict()
+        d.pop("content", None)
+        rows.append(d)
+    return rows
 
 
 def cmd_fetch(args) -> int:
     p = Profile.load(args.profile)
-    jobs = fetch_all(p.boards, getattr(p, "workday_specs", None))
+    res = run_pipeline(p, fetch_only=True)
     out = Path(args.out)
-    out.write_text(json.dumps([j.to_dict() for j in jobs], indent=1))
-    boards = len({(j.source, j.company) for j in jobs})
-    print(f"fetched {len(jobs)} jobs from {boards} boards -> {out}")
+    out.write_text(json.dumps([j.to_dict() for j in res["jobs"]], indent=1))
+    boards = len({(j.source, j.company) for j in res["jobs"]})
+    print(f"fetched {len(res['jobs'])} jobs from {boards} boards -> {out}")
     return 0
 
 
 def cmd_match(args) -> int:
     p = Profile.load(args.profile)
-    raw = _load_jobs(Path(args.jobs))
-    from .models import Job
-    jobs2 = []
-    for j in raw:
-        jobs2.append(Job(
-            source=j.get("source", ""), company=j.get("company", ""),
-            id=j.get("id", ""), title=j.get("title", ""), url=j.get("url", ""),
-            location=j.get("location", ""), updated=j.get("updated", ""),
-            content=j.get("content", ""), extra=j.get("extra", {})))
-    jobs2 = dedupe(jobs2)
-    verdicts = [evaluate(j, p.criteria) for j in jobs2]
-    passed = [v for v in verdicts if v.passed]
+    raw = json.loads(Path(args.jobs).read_text())
+    jobs = [Job(**{k: j.get(k, {} if k == "extra" else "")
+                   for k in ("source", "company", "id", "title", "url",
+                             "location", "updated", "content", "extra")})
+            for j in raw]
+    res = run_pipeline(p, match_only=True, raw_jobs=jobs)
     out = Path(args.out)
-    rows = []
-    for v in passed:
-        d = v.job.to_dict()
-        d.pop("content", None)
-        d["salary"] = list(v.salary) if v.salary else None
-        d["min_years"] = v.min_years
-        rows.append(d)
-    out.write_text(json.dumps(rows, indent=1))
-    print(f"matched {len(passed)} / {len(verdicts)} jobs -> {out}")
+    out.write_text(json.dumps(_rows(res["matches"]), indent=1))
+    print(f"matched {len(res['matches'])} / {len(res['jobs'])} jobs -> {out}")
     if args.verbose:
-        for v in verdicts:
-            if not v.passed:
-                print(f"REJECT {v.job.company}: {v.job.title} :: {'; '.join(v.reasons)}",
-                      file=sys.stderr)
+        for jid, why in res["rejected"].items():
+            print(f"REJECT {jid} :: {why}", file=sys.stderr)
     return 0
 
 
 def cmd_run(args) -> int:
     p = Profile.load(args.profile)
-    jobs = fetch_all(p.boards, getattr(p, "workday_specs", None))
-    jobs = dedupe(jobs)
-    verdicts = [evaluate(j, p.criteria) for j in jobs]
-    passed = [v for v in verdicts if v.passed]
+    res = run_pipeline(p)
     outdir = Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "raw_jobs.json").write_text(
-        json.dumps([j.to_dict() for j in jobs], indent=1))
-    rows = []
-    for v in passed:
-        d = v.job.to_dict()
-        d.pop("content", None)
-        d["salary"] = list(v.salary) if v.salary else None
-        d["min_years"] = v.min_years
-        rows.append(d)
-    (outdir / "matches.json").write_text(json.dumps(rows, indent=1))
-    print(f"fetched {len(jobs)} jobs; matched {len(passed)} -> {outdir}/matches.json")
+        json.dumps([j.to_dict() for j in res["jobs"]], indent=1))
+    (outdir / "matches.json").write_text(
+        json.dumps(_rows(res["matches"]), indent=1))
+    print(f"fetched {len(res['jobs'])} jobs; matched {len(res['matches'])} "
+          f"-> {outdir}/matches.json")
     return 0
 
 
 def cmd_boards(args) -> int:
-    """Probe each configured board slug; report job counts or DEAD."""
+    """Probe each configured board; report job counts or DEAD."""
     p = Profile.load(args.profile)
+    load_plugins()
     bad = 0
-    for ats, slugs in p.boards.items():
-        for slug in slugs:
-            from .fetchers import FETCHERS
-            fn = FETCHERS.get(ats)
-            if not fn:
-                print(f"{ats} {slug}: unknown ATS")
-                continue
-            jobs = fn(slug)
-            status = f"{len(jobs)} jobs" if jobs else "DEAD/EMPTY"
-            if not jobs:
-                bad += 1
-            print(f"{ats} {slug}: {status}")
-    for spec in getattr(p, "workday_specs", []):
-        from .fetchers import workday
-        jobs = workday({**spec, "max_jobs": 20})
-        status = f"{len(jobs)} jobs (sampled)" if jobs else "DEAD/EMPTY"
+    for board in build_boards(p):
+        try:
+            jobs = board.fetch()
+        except Exception as e:
+            jobs = []
+            print(f"{board.name}: ERROR {e}")
+        status = f"{len(jobs)} jobs" if jobs else "DEAD/EMPTY"
         if not jobs:
             bad += 1
-        print(f"workday {spec.get('tenant')}/{spec.get('site')}: {status}")
+        print(f"{board.name}: {status}")
     return 1 if bad else 0
+
+
+def cmd_plugins(args) -> int:
+    load_plugins()
+    print("boards:", ", ".join(sorted(BOARDS)))
+    print("filters:", ", ".join(sorted(FILTERS)))
+    print("judges:", ", ".join(sorted(JUDGES)))
+    return 0
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="jobhunt",
-        description="Fetch and match engineering jobs from public ATS boards.")
+        description="Fetch and match engineering jobs from pluggable job boards.")
     ap.add_argument("--profile", "-p", required=True, help="profile YAML path")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
@@ -113,18 +96,21 @@ def main(argv=None) -> int:
     f.add_argument("--out", default="raw_jobs.json")
     f.set_defaults(fn=cmd_fetch)
 
-    m = sub.add_parser("match", help="score an existing raw_jobs.json against the profile")
+    m = sub.add_parser("match", help="run the filter pipeline on an existing raw_jobs.json")
     m.add_argument("--jobs", default="raw_jobs.json")
     m.add_argument("--out", default="matches.json")
     m.add_argument("-v", "--verbose", action="store_true")
     m.set_defaults(fn=cmd_match)
 
-    r = sub.add_parser("run", help="fetch + match in one pass")
+    r = sub.add_parser("run", help="fetch + filter in one pass")
     r.add_argument("--outdir", default="out")
     r.set_defaults(fn=cmd_run)
 
-    b = sub.add_parser("boards", help="probe every board slug (exit 1 if any dead)")
+    b = sub.add_parser("boards", help="probe every configured board (exit 1 if any dead)")
     b.set_defaults(fn=cmd_boards)
+
+    pl = sub.add_parser("plugins", help="list registered boards/filters/judges")
+    pl.set_defaults(fn=cmd_plugins)
 
     args = ap.parse_args(argv)
     return args.fn(args)
