@@ -108,8 +108,20 @@ def _jobs_list(kind: str, slug: str) -> list[dict] | None:
     return None
 
 
-def title_match(lead_title: str, jobs: list[dict]) -> bool:
-    lt = norm_title(lead_title)
+def strip_company_prefix(title: str, lead) -> str:
+    """Aggregator lead titles often embed the company name
+    ('Samsara: Staff Software Engineer'). Strip it so verification compares
+    role-to-role instead of penalizing the prefix with token overlap."""
+    t = norm_title(title)
+    for name in (norm_title(getattr(lead, "company_display", "") or ""),
+                 norm_title((getattr(lead, "company", "") or "").replace("-", " "))):
+        if name and t.startswith(name):
+            t = t[len(name):].strip(" -:")
+    return t.strip() or norm_title(title)
+
+
+def title_match(lead_title: str, jobs: list[dict], lead=None) -> bool:
+    lt = strip_company_prefix(lead_title, lead) if lead is not None else norm_title(lead_title)
     for j in jobs:
         jt = norm_title(j.get("title", ""))
         if not jt:
@@ -135,7 +147,7 @@ def probe_api(kind: str, slug: str, lead) -> dict | None:
         jobs = _jobs_list(kind, variant)
         if not jobs:
             continue
-        verified = title_match(lead.title, jobs)
+        verified = title_match(lead.title, jobs, lead)
         return {"kind": kind, "slug": variant, "verified": verified,
                 "board_jobs": len(jobs)}
     return None
@@ -159,7 +171,7 @@ def careers_page_probe(slug: str, lead) -> dict | None:
                     headers=BROWSER_UA, tries=2)
             rows = (d or {}).get("jobPostings") or []
             verified = bool(rows) and title_match(
-                lead.title, [{"title": r.get("title", "")} for r in rows])
+                lead.title, [{"title": r.get("title", "")} for r in rows], lead)
             return {"kind": "workday", "tenant": tenant, "host": host,
                     "site": site, "terms": [core_title(lead.title)],
                     "verified": verified, "board_jobs": len(rows)}
