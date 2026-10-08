@@ -11,6 +11,20 @@ def strip_tags(s: str) -> str:
     return html.unescape(s)
 
 
+def text_of(fragment: str) -> str:
+    """Strip tags, unescape entities, collapse whitespace."""
+    return re.sub(r"\s+", " ", html.unescape(strip_tags(fragment or ""))).strip()
+
+
+def class_text(block: str, cls: str, tag: str = "span") -> str:
+    """Text of the first <tag class="... cls ..."> in block. cls must appear
+    as a whole class token (delimited by quote/space), so 'location' does not
+    match 'job-location'."""
+    m = re.search(r'<' + tag + r'[^>]*class="[^"]*?(?<=["\s])' + cls +
+                  r'(?=["\s])[^"]*"[^>]*>(.*?)</' + tag + '>', block, re.S)
+    return text_of(m.group(1)) if m else ""
+
+
 _MONEY_RE = re.compile(r"\$\s*(\d[\d,]*)\s*(k|K)?")
 
 

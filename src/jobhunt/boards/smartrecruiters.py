@@ -52,7 +52,7 @@ from ..http import get
 from ..models import Job
 from ..registry import register_board
 from ..util import strip_tags, MAX_CONTENT
-from .base import Board, slug_list
+from .base import Board
 
 API = "https://api.smartrecruiters.com/v1/companies/{company}/postings"
 DETAIL = "https://api.smartrecruiters.com/v1/companies/{company}/postings/{id}"

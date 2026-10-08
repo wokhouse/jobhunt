@@ -116,7 +116,8 @@ def _detail(base, site, jid):
 
 def _locations(row):
     names = []
-    for key in ("PrimaryLocation", "secondaryLocations", "otherWorkLocations"):
+    for key in ("PrimaryLocation", "secondaryLocations", "otherWorkLocations",
+                "workLocation"):
         v = row.get(key)
         if isinstance(v, str) and v:
             names.append(v)

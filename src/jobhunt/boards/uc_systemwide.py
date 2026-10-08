@@ -48,25 +48,16 @@ import http.cookiejar
 from ..http import get, UA
 from ..models import Job
 from ..registry import register_board
-from ..util import strip_tags, MAX_CONTENT
+from ..util import class_text, text_of, MAX_CONTENT
 from .base import Board
 
 BASE = "https://jobs.universityofcalifornia.edu"
 SEARCH = BASE + "/site/advancedsearch"
 PAGE_SIZE = 10
 
-_SPOT = re.compile(r'<div class="jobspot">(.*?)</div>\s*(?=<div class="jobspot"|'
-                   r'<!-- |\Z)', re.S)
-
-
-def _text(fragment):
-    return re.sub(r"\s+", " ", html.unescape(strip_tags(fragment or ""))).strip()
-
 
 def _field(block, cls):
-    m = re.search(r'<[^>]+class="[^"]*\b' + cls + r'\b[^"]*"[^>]*>(.*?)</[^>]+>',
-                  block, re.S)
-    return _text(m.group(1)) if m else ""
+    return class_text(block, cls, tag="[^>]+")
 
 
 def _job_link(block):
@@ -77,7 +68,7 @@ def _job_link(block):
     href = re.search(r'href="([^"]+)"', attrs)
     if not href:
         return "", ""
-    return html.unescape(href.group(1)), _text(m.group(3))
+    return html.unescape(href.group(1)), text_of(m.group(3))
 
 
 def _total(page_html):
@@ -103,13 +94,18 @@ def _parse(page_html):
     return out
 
 
-def _cookie_get(url, timeout=25):
-    """GET through a per-call cookie jar (PeopleSoft needs session cookies)."""
+def _opener():
+    """One cookie-aware opener per board run (PeopleSoft needs session
+    cookies; they must persist across detail requests)."""
     cj = http.cookiejar.CookieJar()
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     opener.addheaders = [("User-Agent", UA["User-Agent"]),
                          ("Accept", "text/html,application/xhtml+xml,*/*;q=0.8"),
                          ("Accept-Language", "en-US,en;q=0.9")]
+    return opener
+
+
+def _get_html(opener, url, timeout=25):
     try:
         with opener.open(url, timeout=timeout) as r:
             return r.read().decode("utf-8", "replace")
@@ -124,7 +120,7 @@ def _detail_body(page_html):
     m = re.search(r"(Departmental Overview.*?)"
                   r"(?:Application Review Date|Responsibilities|Required "
                   r"Qualifications|Salary & Benefits)", page_html, re.S)
-    return _text(m.group(1)) if m else ""
+    return text_of(m.group(1)) if m else ""
 
 
 def uc_systemwide(spec: dict) -> list[Job]:
@@ -162,16 +158,17 @@ def uc_systemwide(spec: dict) -> list[Job]:
         time.sleep(0.4)
 
     out = []
+    opener = _opener()
     for r in rows[:max_jobs]:
         content = r["summary"]
         if want_detail and r["url"]:
-            full = _detail_body(_cookie_get(r["url"]))
+            full = _detail_body(_get_html(opener, r["url"]))
             if len(full) > len(content):
                 content = full
             time.sleep(0.3)
         out.append(Job(
             source="uc_systemwide", company=company,
-            id=f"uc-{campus}-{r['requisition'] or abs(hash(r['url']))}",
+            id=f"uc-{campus}-{r['requisition'] or r['url']}",
             title=r["title"], url=r["url"], location=r["location"],
             updated=r["updated"], content=(content or "")[:MAX_CONTENT],
         ))

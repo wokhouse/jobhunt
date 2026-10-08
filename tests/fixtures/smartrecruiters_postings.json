@@ -1,0 +1,523 @@
+{
+ "offset": 0,
+ "limit": 5,
+ "totalFound": 159,
+ "content": [
+  {
+   "id": "3743990015976606",
+   "name": "Director of Risk Management (0941) - Risk Management, Office of City Administrator",
+   "uuid": "c425ffea-301d-4df8-bb2d-dbe98b88aff1",
+   "jobAdId": "409bdbd9-96c1-45a6-a9df-282ff2086899",
+   "defaultJobAd": true,
+   "refNumber": "RTF0167390-01097553",
+   "company": {
+    "identifier": "CityAndCountyOfSanFrancisco1",
+    "name": "City and County of San Francisco"
+   },
+   "releasedDate": "2026-10-07T23:37:52.252Z",
+   "location": {
+    "city": "San Francisco",
+    "region": "CA",
+    "country": "us",
+    "address": "25 Van Ness Avenue",
+    "postalCode": "94102",
+    "remote": false,
+    "hybrid": true,
+    "latitude": "37.7756519",
+    "longitude": "-122.4196224",
+    "fullLocation": "San Francisco, CA, United States"
+   },
+   "industry": {
+    "id": "government_administration",
+    "label": "Government Administration"
+   },
+   "department": {
+    "id": "2296367",
+    "label": "City Administrator"
+   },
+   "function": {
+    "id": "other",
+    "label": "Other"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "entry_level",
+    "label": "Entry Level"
+   },
+   "customField": [
+    {
+     "fieldId": "6051ed008e33797c56a381a2",
+     "fieldLabel": "Brands",
+     "valueId": "default",
+     "valueLabel": "City and County of San Francisco"
+    },
+    {
+     "fieldId": "6051ed008e33797c56a381a3",
+     "fieldLabel": "Department",
+     "valueId": "2296367",
+     "valueLabel": "City Administrator"
+    },
+    {
+     "fieldId": "6052763ed85aff5fa39f99cb",
+     "fieldLabel": "Recruitment Type",
+     "valueId": "e7d80887-8fa1-4cef-aba4-e9b800d22140",
+     "valueLabel": "Permanent Exempt"
+    },
+    {
+     "fieldId": "COUNTRY",
+     "fieldLabel": "Country/Region",
+     "valueId": "us",
+     "valueLabel": "United States"
+    },
+    {
+     "fieldId": "60527cac469a184e9d282df9",
+     "fieldLabel": "Job Code and Title",
+     "valueId": "0941",
+     "valueLabel": "0941-Manager VI"
+    },
+    {
+     "fieldId": "605272618e33797c56a381b5",
+     "fieldLabel": "Fill Type",
+     "valueId": "59700cd1-84f4-40f3-bd0c-f11e653ce715",
+     "valueLabel": "Permanent Exempt"
+    },
+    {
+     "fieldId": "60527ae56588230cf59bdca3",
+     "fieldLabel": "PeopleSoft Recruitment ID - Eligible List ID",
+     "valueLabel": "167391"
+    }
+   ],
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/CityAndCountyOfSanFrancisco1/postings/3743990015976606",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "3743990015967486",
+   "name": "Supervising Welfare Fraud Investigator (2967) -  Investigations Unit- Human Services Agency (167737)",
+   "uuid": "bc94095c-5042-4409-bb79-2424fb5bb9f3",
+   "jobAdId": "a0ddfacb-33f4-40c6-b703-0baa31ac11e2",
+   "defaultJobAd": true,
+   "refNumber": "RTF0167705-01089608",
+   "company": {
+    "identifier": "CityAndCountyOfSanFrancisco1",
+    "name": "City and County of San Francisco"
+   },
+   "releasedDate": "2026-10-07T18:23:08.132Z",
+   "location": {
+    "city": "San Francisco",
+    "region": "CA",
+    "country": "us",
+    "address": "1650 Mission Street",
+    "postalCode": "94103",
+    "remote": false,
+    "hybrid": false,
+    "latitude": "37.7716993",
+    "longitude": "-122.4195351",
+    "fullLocation": "San Francisco, CA, United States"
+   },
+   "industry": {
+    "id": "government_administration",
+    "label": "Government Administration"
+   },
+   "department": {
+    "id": "2296945",
+    "label": "Human Services Agency"
+   },
+   "function": {
+    "id": "other",
+    "label": "Other"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "entry_level",
+    "label": "Entry Level"
+   },
+   "customField": [
+    {
+     "fieldId": "60b119012c72904ec3d5ea77",
+     "fieldLabel": "Certification Rule",
+     "valueId": "c09adba1-f73d-478b-9904-3a321e503a98",
+     "valueLabel": "Rule of 10"
+    },
+    {
+     "fieldId": "6051ed008e33797c56a381a2",
+     "fieldLabel": "Brands",
+     "valueId": "default",
+     "valueLabel": "City and County of San Francisco"
+    },
+    {
+     "fieldId": "6051ed008e33797c56a381a3",
+     "fieldLabel": "Department",
+     "valueId": "2296945",
+     "valueLabel": "Human Services Agency"
+    },
+    {
+     "fieldId": "COUNTRY",
+     "fieldLabel": "Country/Region",
+     "valueId": "us",
+     "valueLabel": "United States"
+    },
+    {
+     "fieldId": "60b11815247f297579e72204",
+     "fieldLabel": "Exam Type",
+     "valueId": "9c826a87-62b2-4653-81a8-75e49f0073d9",
+     "valueLabel": "Position Based Test"
+    },
+    {
+     "fieldId": "6052763ed85aff5fa39f99cb",
+     "fieldLabel": "Recruitment Type",
+     "valueId": "04851343-aa62-4fe8-899d-7f1bb684970b",
+     "valueLabel": "Position Based Test"
+    },
+    {
+     "fieldId": "60527cac469a184e9d282df9",
+     "fieldLabel": "Job Code and Title",
+     "valueId": "2967",
+     "valueLabel": "2967-Supervising Welfare Fraud Investigator"
+    },
+    {
+     "fieldId": "605272618e33797c56a381b5",
+     "fieldLabel": "Fill Type",
+     "valueId": "87748eab-e821-4162-9995-6cf4998d177c",
+     "valueLabel": "Permanent Civil Service"
+    },
+    {
+     "fieldId": "61007526154bc63138f53d04",
+     "fieldLabel": "Eligible List Type",
+     "valueId": "ef3414ee-07da-4256-9f59-2b16f1dd221e",
+     "valueLabel": "Combined Promotive and Entrance"
+    },
+    {
+     "fieldId": "60527ae56588230cf59bdca3",
+     "fieldLabel": "PeopleSoft Recruitment ID - Eligible List ID",
+     "valueLabel": "167737"
+    }
+   ],
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/CityAndCountyOfSanFrancisco1/postings/3743990015967486",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "3743990015965026",
+   "name": "Museum Registrar (3556) - SFO - 164004",
+   "uuid": "3f9d87f1-5d61-4509-abe5-be22054b1704",
+   "jobAdId": "87db885c-3db1-4ca4-aef9-df6a365bc746",
+   "defaultJobAd": true,
+   "refNumber": "RTF0164003-01118831",
+   "company": {
+    "identifier": "CityAndCountyOfSanFrancisco1",
+    "name": "City and County of San Francisco"
+   },
+   "releasedDate": "2026-10-07T17:23:36.531Z",
+   "location": {
+    "city": "San Francisco",
+    "region": "CA",
+    "country": "us",
+    "address": "San Francisco International Airport",
+    "postalCode": "94128",
+    "remote": false,
+    "hybrid": false,
+    "fullLocation": "San Francisco, CA, United States"
+   },
+   "industry": {
+    "id": "government_administration",
+    "label": "Government Administration"
+   },
+   "department": {
+    "id": "2296401",
+    "label": "San Francisco International Airport"
+   },
+   "function": {
+    "id": "art_creative",
+    "label": "Art/Creative"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "associate",
+    "label": "Associate"
+   },
+   "customField": [
+    {
+     "fieldId": "60b119012c72904ec3d5ea77",
+     "fieldLabel": "Certification Rule",
+     "valueId": "c09adba1-f73d-478b-9904-3a321e503a98",
+     "valueLabel": "Rule of 10"
+    },
+    {
+     "fieldId": "6051ed008e33797c56a381a2",
+     "fieldLabel": "Brands",
+     "valueId": "default",
+     "valueLabel": "City and County of San Francisco"
+    },
+    {
+     "fieldId": "6051ed008e33797c56a381a3",
+     "fieldLabel": "Department",
+     "valueId": "2296401",
+     "valueLabel": "San Francisco International Airport"
+    },
+    {
+     "fieldId": "COUNTRY",
+     "fieldLabel": "Country/Region",
+     "valueId": "us",
+     "valueLabel": "United States"
+    },
+    {
+     "fieldId": "60527c31469a184e9d282df8",
+     "fieldLabel": "Work Hours",
+     "valueId": "0d05961c-ea06-40f7-98dd-c3a3fa59e9c7",
+     "valueLabel": "Regular"
+    },
+    {
+     "fieldId": "60b11815247f297579e72204",
+     "fieldLabel": "Exam Type",
+     "valueId": "9c826a87-62b2-4653-81a8-75e49f0073d9",
+     "valueLabel": "Position Based Test"
+    },
+    {
+     "fieldId": "6052763ed85aff5fa39f99cb",
+     "fieldLabel": "Recruitment Type",
+     "valueId": "04851343-aa62-4fe8-899d-7f1bb684970b",
+     "valueLabel": "Position Based Test"
+    },
+    {
+     "fieldId": "60527cac469a184e9d282df9",
+     "fieldLabel": "Job Code and Title",
+     "valueId": "3556",
+     "valueLabel": "3556-Museum Registrar"
+    },
+    {
+     "fieldId": "605272618e33797c56a381b5",
+     "fieldLabel": "Fill Type",
+     "valueId": "87748eab-e821-4162-9995-6cf4998d177c",
+     "valueLabel": "Permanent Civil Service"
+    },
+    {
+     "fieldId": "61007526154bc63138f53d04",
+     "fieldLabel": "Eligible List Type",
+     "valueId": "ef3414ee-07da-4256-9f59-2b16f1dd221e",
+     "valueLabel": "Combined Promotive and Entrance"
+    },
+    {
+     "fieldId": "60527ae56588230cf59bdca3",
+     "fieldLabel": "PeopleSoft Recruitment ID - Eligible List ID",
+     "valueLabel": "164004"
+    }
+   ],
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/CityAndCountyOfSanFrancisco1/postings/3743990015965026",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "3743990015964606",
+   "name": "IS Business Analyst Senior - Department of Homelessness and Supportive Housing (TEX 1053)",
+   "uuid": "f5bd74ba-5017-4593-9d1c-15f9dc584555",
+   "jobAdId": "89ad7c22-8719-4430-a7bf-3e20f0ea3cc3",
+   "defaultJobAd": true,
+   "refNumber": "RTF0168310-01160072",
+   "company": {
+    "identifier": "CityAndCountyOfSanFrancisco1",
+    "name": "City and County of San Francisco"
+   },
+   "releasedDate": "2026-10-07T17:18:10.402Z",
+   "location": {
+    "city": "San Francisco",
+    "region": "CA",
+    "country": "us",
+    "address": "440 Turk Street",
+    "postalCode": "94102",
+    "remote": false,
+    "hybrid": true,
+    "hybridDescription": "Hybrid with onsite and remote weekly schedule",
+    "latitude": "37.7826109",
+    "longitude": "-122.4165159",
+    "fullLocation": "San Francisco, CA, United States"
+   },
+   "industry": {
+    "id": "government_administration",
+    "label": "Government Administration"
+   },
+   "department": {
+    "id": "2296894",
+    "label": "Homelessness and Supportive Housing"
+   },
+   "function": {
+    "id": "other",
+    "label": "Other"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "entry_level",
+    "label": "Entry Level"
+   },
+   "customField": [
+    {
+     "fieldId": "6051ed008e33797c56a381a2",
+     "fieldLabel": "Brands",
+     "valueId": "default",
+     "valueLabel": "City and County of San Francisco"
+    },
+    {
+     "fieldId": "6051ed008e33797c56a381a3",
+     "fieldLabel": "Department",
+     "valueId": "2296894",
+     "valueLabel": "Homelessness and Supportive Housing"
+    },
+    {
+     "fieldId": "6052763ed85aff5fa39f99cb",
+     "fieldLabel": "Recruitment Type",
+     "valueId": "ff0d5ab1-4886-443d-9cc0-bbe79025dcd7",
+     "valueLabel": "Temporary Exempt"
+    },
+    {
+     "fieldId": "COUNTRY",
+     "fieldLabel": "Country/Region",
+     "valueId": "us",
+     "valueLabel": "United States"
+    },
+    {
+     "fieldId": "60527cac469a184e9d282df9",
+     "fieldLabel": "Job Code and Title",
+     "valueId": "1053",
+     "valueLabel": "1053-IS Business Analyst-Senior"
+    },
+    {
+     "fieldId": "605272618e33797c56a381b5",
+     "fieldLabel": "Fill Type",
+     "valueId": "b8aaf635-098d-4cf1-a2d9-144cc18210b9",
+     "valueLabel": "Temporary Exempt"
+    },
+    {
+     "fieldId": "60527ae56588230cf59bdca3",
+     "fieldLabel": "PeopleSoft Recruitment ID - Eligible List ID",
+     "valueLabel": "168311"
+    }
+   ],
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/CityAndCountyOfSanFrancisco1/postings/3743990015964606",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "3743990015964096",
+   "name": "Engineering Manager, Backend (1054) - Systems and Analytics - Department of Human Resources",
+   "uuid": "b5fd54eb-326d-43df-8db7-5e4f44f958d5",
+   "jobAdId": "284e265b-b3f8-4995-b60d-d067c31d9c29",
+   "defaultJobAd": true,
+   "refNumber": "RTF0168438-01144712",
+   "company": {
+    "identifier": "CityAndCountyOfSanFrancisco1",
+    "name": "City and County of San Francisco"
+   },
+   "releasedDate": "2026-10-07T17:07:13.126Z",
+   "location": {
+    "city": "San Francisco",
+    "region": "CA",
+    "country": "us",
+    "address": "1 South Van Ness Avenue",
+    "postalCode": "94103",
+    "remote": false,
+    "hybrid": true,
+    "latitude": "37.7749136",
+    "longitude": "-122.4187824",
+    "fullLocation": "San Francisco, CA, United States"
+   },
+   "industry": {
+    "id": "government_administration",
+    "label": "Government Administration"
+   },
+   "department": {
+    "id": "2296928",
+    "label": "Human Resources"
+   },
+   "function": {
+    "id": "other",
+    "label": "Other"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "entry_level",
+    "label": "Entry Level"
+   },
+   "customField": [
+    {
+     "fieldId": "6051ed008e33797c56a381a2",
+     "fieldLabel": "Brands",
+     "valueId": "default",
+     "valueLabel": "City and County of San Francisco"
+    },
+    {
+     "fieldId": "6051ed008e33797c56a381a3",
+     "fieldLabel": "Department",
+     "valueId": "2296928",
+     "valueLabel": "Human Resources"
+    },
+    {
+     "fieldId": "6052763ed85aff5fa39f99cb",
+     "fieldLabel": "Recruitment Type",
+     "valueId": "e7d80887-8fa1-4cef-aba4-e9b800d22140",
+     "valueLabel": "Permanent Exempt"
+    },
+    {
+     "fieldId": "COUNTRY",
+     "fieldLabel": "Country/Region",
+     "valueId": "us",
+     "valueLabel": "United States"
+    },
+    {
+     "fieldId": "60527cac469a184e9d282df9",
+     "fieldLabel": "Job Code and Title",
+     "valueId": "1054",
+     "valueLabel": "1054-IS Business Analyst-Principal"
+    },
+    {
+     "fieldId": "605272618e33797c56a381b5",
+     "fieldLabel": "Fill Type",
+     "valueId": "59700cd1-84f4-40f3-bd0c-f11e653ce715",
+     "valueLabel": "Permanent Exempt"
+    },
+    {
+     "fieldId": "60527ae56588230cf59bdca3",
+     "fieldLabel": "PeopleSoft Recruitment ID - Eligible List ID",
+     "valueLabel": "168439"
+    }
+   ],
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/CityAndCountyOfSanFrancisco1/postings/3743990015964096",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  }
+ ]
+}

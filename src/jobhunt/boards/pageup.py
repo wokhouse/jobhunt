@@ -32,14 +32,13 @@ Config (a spec dict, or a list of them):
           page_items: 20             # optional page size (default 20)
           max_jobs: 100              # optional cap (default 100)
 """
-import html
 import re
 import time
 
 from ..http import get
 from ..models import Job
 from ..registry import register_board
-from ..util import strip_tags, MAX_CONTENT
+from ..util import class_text, text_of, MAX_CONTENT
 from .base import Board
 
 BROWSER_HEADERS = {
@@ -58,23 +57,13 @@ BROWSER_HEADERS = {
 LIST = "https://{host}/en-us/listing/"
 
 _ROW = re.compile(
-    r'<a[^>]+class="job-link"[^>]+href="([^"]+)"[^>]*>(.*?)</a>(.*?)'
-    r'(?=<a[^>]+class="job-link"|\Z)', re.S)
-
-
-def _text(fragment):
-    return re.sub(r"\s+", " ", html.unescape(strip_tags(fragment or ""))).strip()
-
-
-def _span(block, cls):
-    m = re.search(r'<span[^>]+class="[^"]*\b' + cls + r'\b[^"]*"[^>]*>(.*?)</span>',
-                  block, re.S)
-    return _text(m.group(1)) if m else ""
+    r'<a[^>]*class="[^"]*\bjob-link\b[^"]*"[^>]*href="([^"]+)"[^>]*>(.*?)</a>'
+    r'(.*?)(?=<a[^>]*class="[^"]*\bjob-link\b|</tbody>|\Z)', re.S)
 
 
 def _summary(block):
     m = re.search(r'<tr[^>]+class="summary"[^>]*>(.*?)</tr>', block, re.S)
-    return _text(m.group(1)) if m else ""
+    return text_of(m.group(1)) if m else ""
 
 
 def _fetch_listing(host, page, page_items):
@@ -95,7 +84,7 @@ def _parse(page_html, host):
         return out
     for m in _ROW.finditer(page_html):
         href = m.group(1)
-        title = _text(m.group(2))
+        title = text_of(m.group(2))
         rest = m.group(3)
         if not href or not title:
             continue
@@ -105,8 +94,8 @@ def _parse(page_html, host):
         out.append({
             "id": jid.group(1) if jid else href.rstrip("/").split("/")[-1],
             "title": title, "url": url,
-            "location": _span(rest, "location"),
-            "updated": _span(rest, "open-date"),
+            "location": class_text(rest, "location"),
+            "updated": class_text(rest, "open-date"),
             "summary": _summary(rest),
         })
     return out
