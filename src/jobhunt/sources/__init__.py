@@ -13,3 +13,5 @@ from .himalayas import HimalayasSource
 from .jobicy import JobicySource
 from .weworkremotely import WwrSource
 from .builtin import BuiltinSource  # noqa: F401
+from .waas import WaasSource  # noqa: F401
+from .hn import HnSource  # noqa: F401

@@ -67,6 +67,22 @@ def test_builtin_live():
     assert all("builtinsf.com" in l.url for l in leads)
 
 
+def test_waas_live():
+    from jobhunt.sources import WaasSource
+    leads = WaasSource({"search": "software engineer", "max_leads": 10}).leads()
+    assert len(leads) >= 1
+    assert all(l.company and l.title for l in leads)
+    assert all("workatastartup.com/companies/" in l.url for l in leads)
+
+
+def test_hn_live():
+    from jobhunt.sources import HnSource
+    leads = HnSource({"max_leads": 10}).leads()
+    assert len(leads) >= 1
+    assert all(l.company and l.title for l in leads)
+    assert all("news.ycombinator.com/item?id=" in l.url for l in leads)
+
+
 def test_discover_resolve_live():
     """End-to-end: aggregator lead -> first-party ATS board resolution."""
     from jobhunt.discover import resolve_leads

@@ -227,6 +227,111 @@ def test_builtin_registered():
     assert "builtin" in SOURCES
 
 
+WAAS_SEARCH = """
+{"jobs": [
+  {"id": 1, "title": "Software Engineer - Backend", "companyName": "Mason",
+   "companySlug": "mason", "location": "Seattle, WA"},
+  {"id": 2, "title": "Senior Frontend Engineer", "companyName": "Mason",
+   "companySlug": "mason", "location": "Seattle, WA"},
+  {"id": 3, "title": "Founding Full Stack Engineer", "companyName": "Hive",
+   "companySlug": "hive", "location": "SF"},
+  {"id": 4, "title": "Sales Account Executive", "companyName": "Hive",
+   "companySlug": "hive", "location": "SF"},
+  {"id": 5, "title": "No company here", "companySlug": "ghost"}
+]}
+"""
+
+
+def test_waas_parse_jobs():
+    import json
+    from jobhunt.sources.waas import parse_jobs
+    rows = parse_jobs(json.loads(WAAS_SEARCH))
+    # entries with no companyName are dropped
+    assert [r["company"] for r in rows] == ["mason", "mason", "hive", "hive"]
+    assert rows[0]["display"] == "Mason"
+    assert parse_jobs(None) == [] and parse_jobs({}) == []
+
+
+def test_waas_pick_title():
+    from jobhunt.sources.waas import pick_title
+    titles = ["Software Engineer - Backend", "Senior Frontend Engineer"]
+    assert pick_title(titles, "frontend engineer") == "Senior Frontend Engineer"
+    # tie on query tokens -> shortest title wins
+    assert pick_title(["Software Engineer", "Software Engineer II"],
+                      "engineer") == "Software Engineer"
+    # no query tokens -> shortest title
+    assert pick_title(["A very long title here", "Short"], "") == "Short"
+
+
+def test_waas_registered():
+    import jobhunt.sources  # noqa: F401
+    from jobhunt.registry import SOURCES
+    assert "waas" in SOURCES
+
+
+HN_THREAD = """
+{"children": [
+  {"id": 1, "text": "PrairieLearn (Remote US) — Full-Stack Software Engineer — TypeScript<p>We build an assessment platform."},
+  {"id": 2, "text": "<b>Acme Corp</b> | Senior Backend Engineer | Remote<p>We do things."},
+  {"id": 3, "text": "<p>| — |</p>"},
+  {"id": 4, "text": "Shepherd | ONSITE | San Francisco, CA<p>Autonomous underwriting.</p>"},
+  {"id": 5, "text": ""}
+]}
+"""
+
+
+def test_hn_clean_text():
+    from jobhunt.sources.hn import clean_text
+    t = clean_text("A &#x2F; B<p>line two</p>")
+    assert t.startswith("A / B")
+    assert "line two" in t
+    # paragraph break keeps first line separate
+    assert clean_text("Head<p>Body").split("\n")[0] == "Head"
+
+
+def test_hn_parse_comment_strips_trailing_paren_and_url():
+    from jobhunt.sources.hn import parse_comment
+    p = parse_comment("Snout (YC S24) | Data Engineer | Remote")
+    assert p["company"] == "Snout"
+    assert p["title"] == "Data Engineer"
+    p2 = parse_comment("Smarkets (https:&#x2F;&#x2F;www.smarkets.com) | Full Time")
+    assert p2["company"] == "Smarkets"
+
+
+def test_hn_parse_comment_company_and_role():
+    from jobhunt.sources.hn import parse_comment
+    p = parse_comment(
+        "PrairieLearn (Remote US) — Full-Stack Software Engineer")
+    assert p["company"] == "PrairieLearn"
+    assert "Software Engineer" in p["title"]
+    # leading bold wins over the first plain segment
+    p2 = parse_comment("<b>Acme Corp</b> | Senior Backend Engineer | Remote")
+    assert p2["company"] == "Acme Corp"
+    assert p2["title"] == "Senior Backend Engineer"
+
+
+def test_hn_parse_comment_skips_unparseable():
+    from jobhunt.sources.hn import parse_comment
+    assert parse_comment("") is None
+    assert parse_comment("<p>| — |</p>") is None
+
+
+def test_hn_parse_thread():
+    import json
+    from jobhunt.sources.hn import parse_thread
+    posts = parse_thread(json.loads(HN_THREAD))
+    # empty text and the companyless prose comment are skipped
+    assert len(posts) == 3
+    assert [p["company"] for p in posts] == ["PrairieLearn", "Acme Corp", "Shepherd"]
+    assert all(p["company"] for p in posts)
+
+
+def test_hn_registered():
+    import jobhunt.sources  # noqa: F401
+    from jobhunt.registry import SOURCES
+    assert "hn" in SOURCES
+
+
 def test_resolver_helpers():
     from jobhunt.resolver import core_title, norm_title, slug_ok, title_match
     assert norm_title("Senior Software Engineer, AI") == "senior software engineer ai"

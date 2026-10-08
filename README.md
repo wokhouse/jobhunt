@@ -29,13 +29,17 @@ Built-in boards:
 | Workday    | `{tenant}.{host}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs` (POST) |
 
 Built-in filters: `criteria` (keyword rules) and `llm_judge` (optional).
-Built-in discovery sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`, `builtin`.
+Built-in discovery sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`, `builtin`, `waas`, `hn`.
 
 `builtin` scrapes the Built In network of city boards (builtinsf.com,
 builtinnyc.com, and six more) for **company leads only** — jobs are always
 fetched from the company's own ATS board later, never from Built In. Configure
 it with `city` (one of `sf`, `nyc`, `austin`, `boston`, `chicago`, `dallas`,
 `losangeles`, `seattle`; default `sf`) and the usual `search`/`max_leads`.
+
+`waas` searches YC's Work at a Startup company listings; `hn` parses the
+newest Hacker News "Who is hiring?" thread. Both yield company leads only —
+the workatastartup.com page / HN thread URL is kept as evidence.
 
 ## Install
 
@@ -84,9 +88,11 @@ discover:
     category: programming
 ```
 
-Built-in sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`, `builtin`.
+Built-in sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`, `builtin`, `waas`, `hn`.
 `search` is any career field keyword — tech is the default focus, but
-"nurse", "designer", or "accountant" works the same way.
+"nurse", "designer", or "accountant" works the same way. `waas` searches
+Work at a Startup's company listings; `hn` parses the newest "Who is hiring?"
+thread (its `search` is a keyword filter on the comment text).
 
 Resolution order per company: probe Greenhouse → Ashby → Lever → Workable →
 Rippling APIs with the company slug; if no slug hits, fetch the company's
