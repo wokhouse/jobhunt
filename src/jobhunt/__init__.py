@@ -1,5 +1,5 @@
 """jobhunt: pluggable job-board fetcher + keyword/LLM match pipeline."""
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 from .models import Job  # noqa: F401
 from .registry import (  # noqa: F401

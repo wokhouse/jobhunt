@@ -58,6 +58,15 @@ def test_sources_live():
     assert len(w) > 0
 
 
+def test_builtin_live():
+    from jobhunt.sources import BuiltinSource
+    leads = BuiltinSource(
+        {"city": "sf", "search": "frontend engineer", "max_leads": 5}).leads()
+    assert len(leads) >= 3
+    assert all(l.company and l.title for l in leads)
+    assert all("builtinsf.com" in l.url for l in leads)
+
+
 def test_discover_resolve_live():
     """End-to-end: aggregator lead -> first-party ATS board resolution."""
     from jobhunt.discover import resolve_leads

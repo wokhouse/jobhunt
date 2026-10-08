@@ -157,6 +157,76 @@ def test_slugify_and_lead():
     assert lead.company == "dremio"
 
 
+BUILTIN_LISTING = """
+<html><head><script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Organization","name":"Built In"},
+ {"@type":"ItemList","itemListElement":[
+   {"@type":"ListItem","position":1,"name":"Frontend Engineer",
+    "url":"https://www.builtinsf.com/job/frontend-engineer/12345"},
+   {"@type":"ListItem","position":2,"name":"Full Stack Engineer",
+    "url":"https://www.builtinsf.com/job/full-stack-engineer/67890"},
+   {"@type":"ListItem","position":3,"name":"Built In Home",
+    "url":"https://www.builtinsf.com/jobs"}
+ ]}
+]}</script></head><body>jobs</body></html>
+"""
+
+BUILTIN_DETAIL = """
+<html><head><script type="application/ld+json">
+{"@context":"https://schema.org","@type":"JobPosting",
+ "title":"Frontend Engineer",
+ "datePosted":"2026-10-01",
+ "hiringOrganization":{"@type":"Organization","name":"Hinge Health"},
+ "jobLocation":{"@type":"Place","address":{
+   "@type":"PostalAddress","addressLocality":"San Francisco",
+   "addressRegion":"CA"}},
+ "baseSalary":{"@type":"MonetaryAmount","value":{
+   "@type":"QuantitativeValue","minValue":150000,"maxValue":200000}}
+}</script></head><body>job</body></html>
+"""
+
+
+def test_builtin_parse_listing():
+    from jobhunt.sources.builtin import parse_listing
+    items = parse_listing(BUILTIN_LISTING)
+    # only '/job/' entries are kept
+    assert [i["title"] for i in items] == ["Frontend Engineer", "Full Stack Engineer"]
+    assert all("/job/" in i["url"] for i in items)
+    assert items[0]["url"] == "https://www.builtinsf.com/job/frontend-engineer/12345"
+
+
+def test_builtin_parse_detail():
+    from jobhunt.sources.builtin import parse_detail
+    d = parse_detail(BUILTIN_DETAIL)
+    assert d["company"] == "Hinge Health"
+    assert d["title"] == "Frontend Engineer"
+    assert d["location"] == "San Francisco, CA"
+
+
+def test_builtin_parse_detail_skips_companyless():
+    from jobhunt.sources.builtin import parse_detail
+    assert parse_detail("<html>no ld+json here</html>") is None
+    assert parse_detail(
+        '<script type="application/ld+json">'
+        '{"@type":"JobPosting","title":"X"}</script>') is None
+
+
+def test_builtin_city_allowlist_and_slug():
+    from jobhunt.sources.builtin import BuiltinSource
+    import pytest
+    assert BuiltinSource({"city": "nyc"}).host == "builtinnyc.com"
+    assert BuiltinSource({}).host == "builtinsf.com"
+    with pytest.raises(ValueError):
+        BuiltinSource({"city": "atlantis"})
+
+
+def test_builtin_registered():
+    import jobhunt.sources  # noqa: F401
+    from jobhunt.registry import SOURCES
+    assert "builtin" in SOURCES
+
+
 def test_resolver_helpers():
     from jobhunt.resolver import core_title, norm_title, slug_ok, title_match
     assert norm_title("Senior Software Engineer, AI") == "senior software engineer ai"

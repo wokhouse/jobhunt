@@ -29,7 +29,13 @@ Built-in boards:
 | Workday    | `{tenant}.{host}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs` (POST) |
 
 Built-in filters: `criteria` (keyword rules) and `llm_judge` (optional).
-Built-in discovery sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`.
+Built-in discovery sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`, `builtin`.
+
+`builtin` scrapes the Built In network of city boards (builtinsf.com,
+builtinnyc.com, and six more) for **company leads only** — jobs are always
+fetched from the company's own ATS board later, never from Built In. Configure
+it with `city` (one of `sf`, `nyc`, `austin`, `boston`, `chicago`, `dallas`,
+`losangeles`, `seattle`; default `sf`) and the usual `search`/`max_leads`.
 
 ## Install
 
@@ -78,7 +84,7 @@ discover:
     category: programming
 ```
 
-Built-in sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`.
+Built-in sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`, `builtin`.
 `search` is any career field keyword — tech is the default focus, but
 "nurse", "designer", or "accountant" works the same way.
 

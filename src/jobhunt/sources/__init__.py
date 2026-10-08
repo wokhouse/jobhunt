@@ -11,4 +11,5 @@ from .base import Lead, Source, slugify  # noqa: F401
 from .remotive import RemotiveSource
 from .himalayas import HimalayasSource
 from .jobicy import JobicySource
-from .weworkremotely import WwrSource  # noqa: F401
+from .weworkremotely import WwrSource
+from .builtin import BuiltinSource  # noqa: F401
