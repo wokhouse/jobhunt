@@ -105,9 +105,12 @@ class CriteriaFilter(Filter):
 
 
 def _age_days(updated: str) -> int | None:
-    """Parse ISO date or Workday 'N Days Ago' / 'Posted Today' strings."""
+    """Parse ISO date, epoch-ms (Lever), or Workday 'N Days Ago' strings."""
     if not updated:
         return None
+    if re.fullmatch(r"\d{12,13}", str(updated)):
+        import time as _time
+        return max(0, int((_time.time() - int(updated) / 1000) // 86400))
     m = re.search(r"(\d+)\s+days?\s+ago", updated, re.I)
     if m:
         return int(m.group(1))

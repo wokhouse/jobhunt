@@ -68,7 +68,7 @@ class LLMJudge(Filter):
             )
             body = {"messages": [{"role": "system", "content": rubric},
                                  {"role": "user", "content": user}],
-                    "max_tokens": 600, "temperature": 0}
+                    "max_tokens": 1500, "temperature": 0}
             if model:
                 body["model"] = model
             hdrs = {"Content-Type": "application/json"}
