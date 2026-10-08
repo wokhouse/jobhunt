@@ -40,6 +40,7 @@ import yaml
 class Profile:
     name: str = "default"
     boards: dict = field(default_factory=dict)   # {board_name: config}
+    discover: dict = field(default_factory=dict)  # {source_name: config}
     filters: list[dict] = field(default_factory=list)
     criteria_raw: dict = field(default_factory=dict)  # legacy 'criteria:' block
     judge_rubric: str = ""
@@ -54,6 +55,7 @@ class Profile:
         return cls(
             name=raw.get("name", Path(path).stem),
             boards=raw.get("boards") or {},
+            discover=raw.get("discover") or {},
             filters=filters,
             criteria_raw=criteria_raw,
             judge_rubric=raw.get("judge_rubric") or "",

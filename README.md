@@ -1,15 +1,18 @@
 # jobhunt
 
-Fetch and match engineering jobs from public ATS boards. No API keys for
-boards, no scraping of aggregator sites — every source is the company's own
-public job-board API.
+Fetch and match jobs from public ATS boards. No API keys for boards — every
+job comes from the company's own public job-board API. Optional discovery
+scrapes public aggregator boards only to FIND companies; the jobs still come
+from each company's first-party board.
 
-Everything is a plugin: **boards** (job sources), **filters** (match stages),
-and an optional **LLM judge** stage. Built-ins register in-process; third
-parties register via pip entry points. New job boards merge in without
-touching the core.
+Everything is a plugin: **boards** (job sources), **sources** (aggregator
+scrapers for discovery), **filters** (match stages), and an optional **LLM
+judge** stage. Built-ins register in-process; third parties register via pip
+entry points. New job boards merge in without touching the core.
 
 ```
+discover: public boards ──> company leads ──> first-party ATS resolution
+                                                    │
 boards ──> dedupe ──> filter stage 1 ──> filter stage 2 ──> ... ──> matches
                        (criteria)         (llm_judge, optional)
 ```
@@ -26,6 +29,7 @@ Built-in boards:
 | Workday    | `{tenant}.{host}.myworkdayjobs.com/wday/cxs/{tenant}/{site}/jobs` (POST) |
 
 Built-in filters: `criteria` (keyword rules) and `llm_judge` (optional).
+Built-in discovery sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`.
 
 ## Install
 
@@ -52,8 +56,51 @@ Other commands:
 jobhunt -p my.yaml boards          # probe every board; exit 1 if any is dead
 jobhunt -p my.yaml fetch --out raw_jobs.json
 jobhunt -p my.yaml match --jobs raw_jobs.json -v   # -v prints rejection reasons
-jobhunt -p my.yaml plugins         # list registered boards/filters/judges
+jobhunt -p my.yaml plugins         # list registered boards/filters/judges/sources
+jobhunt -p my.yaml discover --fetch  # scrape public boards, resolve companies, fetch
 ```
+
+## Discovery: find companies you don't know yet
+
+You cannot pre-list every company. The `discover:` block scrapes public
+aggregator boards for (company, role) leads, then resolves each company to
+its **first-party ATS board** and pulls jobs from there — the aggregator is
+used only to find companies, never as the job source.
+
+```yaml
+discover:
+  remotive:            # free JSON APIs, no keys
+    search: "software engineer"
+    max_leads: 60
+  himalayas:
+    search: "frontend engineer"
+  weworkremotely:      # RSS per category
+    category: programming
+```
+
+Built-in sources: `remotive`, `himalayas`, `jobicy`, `weworkremotely`.
+`search` is any career field keyword — tech is the default focus, but
+"nurse", "designer", or "accountant" works the same way.
+
+Resolution order per company: probe Greenhouse → Ashby → Lever → Workable →
+Rippling APIs with the company slug; if no slug hits, fetch the company's
+own careers page and parse ATS links (including Workday tenants). A
+resolution is **title-verified** when a job on the resolved board matches
+the lead's role, which prevents slug squatting (someone else's board under
+the same name).
+
+```bash
+jobhunt -p my.yaml discover --outdir discovered
+# leads: 62 from 3 source(s); companies: 42; resolved: 17 (6 title-verified)
+# report -> discovered/companies.json      (company -> ATS, slug, evidence)
+# merged profile -> discovered/profile.discovered.yaml
+jobhunt -p discovered/profile.discovered.yaml run --outdir out2
+```
+
+Add `--fetch` to fetch + match the resolved boards in the same pass. The
+merged profile is a normal jobhunt profile: static `boards:` entries and
+discovered ones coexist, and re-running discovery is idempotent (no
+duplicate slugs).
 
 ## Profile schema
 

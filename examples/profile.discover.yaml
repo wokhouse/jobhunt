@@ -1,0 +1,25 @@
+name: discover-example
+
+# Public aggregator boards to scrape for company leads.
+# Each source is a registered plugin; 'search' is any career field keyword,
+# so this works beyond tech (nurse, designer, accountant, ...).
+discover:
+  remotive:
+    search: "software engineer"
+    max_leads: 60
+  himalayas:
+    search: "frontend engineer"
+    max_leads: 60
+  weworkremotely:
+    category: programming
+    max_leads: 40
+
+# Static boards merge with whatever discovery resolves.
+boards:
+  greenhouse: [stripe]
+
+filters:
+  - name: criteria
+    title_include: ["engineer", "developer"]
+    title_exclude: ["manager", "director", "vp", "intern", "sales", "marketing"]
+    max_years_required: 8

@@ -6,12 +6,19 @@ UA = {"User-Agent": "Mozilla/5.0 (jobhunt/0.1; +https://github.com/wokhouse/jobh
 
 
 def get(url: str, *, method: str = "GET", body: dict | None = None,
+        params: dict | None = None,
         headers: dict | None = None, timeout: int = 15,
-        tries: int = 3, sleep: float = 1.0):
-    """Fetch JSON with retries and linear backoff. Returns None on failure."""
+        tries: int = 3, sleep: float = 1.0, raw: bool = False):
+    """Fetch a URL with retries and linear backoff. Returns None on failure.
+
+    JSON is parsed unless raw=True (RSS/HTML sources pass raw=True).
+    """
     hdrs = dict(UA)
     if headers:
         hdrs.update(headers)
+    if params:
+        from urllib.parse import urlencode
+        url = f"{url}{'&' if '?' in url else '?'}{urlencode(params)}"
     data = None
     if body is not None:
         data = json.dumps(body).encode()
@@ -21,7 +28,8 @@ def get(url: str, *, method: str = "GET", body: dict | None = None,
         try:
             req = urllib.request.Request(url, data=data, headers=hdrs, method=method)
             with urllib.request.urlopen(req, timeout=timeout) as r:
-                return json.loads(r.read().decode())
+                text = r.read().decode(errors="replace")
+                return text if raw else json.loads(text)
         except Exception:
             if attempt < tries - 1:
                 time.sleep(sleep * (attempt + 1))

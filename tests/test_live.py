@@ -46,3 +46,32 @@ def test_workday_live():
                           "max_jobs": 40}]).fetch()
     assert len(jobs) > 0
     assert "myworkdayjobs.com" in jobs[0].url
+
+
+def test_sources_live():
+    from jobhunt.sources import HimalayasSource, RemotiveSource, WwrSource
+    r = RemotiveSource({"search": "software engineer", "max_leads": 10}).leads()
+    h = HimalayasSource({"search": "frontend engineer", "max_leads": 10}).leads()
+    w = WwrSource({"category": "programming", "max_leads": 10}).leads()
+    assert len(r) > 0 and all(l.company and l.title for l in r)
+    assert len(h) > 0 and all(l.company and l.title for l in h)
+    assert len(w) > 0
+
+
+def test_discover_resolve_live():
+    """End-to-end: aggregator lead -> first-party ATS board resolution."""
+    from jobhunt.discover import resolve_leads
+    from jobhunt.sources.base import Lead
+    leads = [
+        Lead(source="test", company="pinterest", company_display="Pinterest",
+             title="Machine Learning Engineer, Core Engineering",
+             url="https://aggregator/x"),
+        Lead(source="test", company="dremio", company_display="Dremio",
+             title="Software Engineer - Query Execution",
+             url="https://aggregator/y"),
+    ]
+    res = resolve_leads(leads)
+    assert "pinterest" in res and res["pinterest"]["kind"] == "greenhouse"
+    assert res["pinterest"]["verified"]
+    assert "dremio" in res and res["dremio"]["kind"] == "greenhouse"
+    assert res["dremio"]["verified"]

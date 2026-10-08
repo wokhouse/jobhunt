@@ -148,6 +148,53 @@ def test_profile_load_new_and_legacy(tmp_path):
     assert prof2.filters[0]["min_salary"] == 100000
 
 
+def test_slugify_and_lead():
+    from jobhunt.sources.base import Lead, slugify
+    assert slugify("Hinge Health") == "hinge-health"
+    assert slugify("  Acme.io ") == "acme-io"
+    lead = Lead(source="remotive", company="dremio", company_display="Dremio",
+                title="Senior Software Engineer", url="https://remotive/x")
+    assert lead.company == "dremio"
+
+
+def test_resolver_helpers():
+    from jobhunt.resolver import core_title, norm_title, slug_ok, title_match
+    assert norm_title("Senior Software Engineer, AI") == "senior software engineer ai"
+    assert core_title("Senior Software Engineer") == "software engineer"
+    assert core_title("Staff Software Engineer II") == "software engineer"
+    assert slug_ok("hinge-health", "hinge-health", "Hinge Health")
+    assert slug_ok("hippocraticai", "hippocratic-ai", "Hippocratic AI")
+    assert slug_ok("stripe", "stripe", "Stripe")
+    assert not slug_ok("acme", "stripe", "Stripe")
+    jobs = [{"title": "Software Engineer II"}, {"title": "Sales Director"}]
+    assert title_match("Senior Software Engineer", jobs)
+    assert not title_match("Nurse Practitioner", jobs)
+
+
+def test_board_specs_and_merge():
+    from jobhunt.discover import board_specs_from_resolutions, merge_specs
+    res = {
+        "stripe": {"kind": "greenhouse", "slug": "stripe", "verified": True,
+                   "board_jobs": 10, "leads": []},
+        "salesforce": {"kind": "workday", "tenant": "salesforce", "host": "wd12",
+                       "site": "External_Career_Site", "terms": ["full stack"],
+                       "verified": True, "board_jobs": 5, "leads": []},
+    }
+    specs = board_specs_from_resolutions(res)
+    assert specs["greenhouse"] == ["stripe"]
+    assert specs["workday"][0]["tenant"] == "salesforce"
+
+    class P:
+        boards = {"greenhouse": ["elastic"]}
+    p = P()
+    added = merge_specs(p, specs)
+    assert p.boards["greenhouse"] == ["elastic", "stripe"]
+    assert added == {"greenhouse": 1, "workday": 1}
+    # idempotent merge
+    added2 = merge_specs(p, specs)
+    assert added2 == {}
+
+
 def test_pipeline_match_only(tmp_path):
     from jobhunt.pipeline import run_pipeline
     p = tmp_path / "p.yaml"
