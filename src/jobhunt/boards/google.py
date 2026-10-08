@@ -10,8 +10,8 @@ directly -- no API key and no browser needed.
 Verified live (see tests/test_google_live.py): ``q=software engineer`` returns
 ~1500 postings; the list page's embedded record already carries title, apply
 URL, locations, and the full description HTML, so no per-job detail fetch is
-required. The canonical per-job URL is
-``.../jobs/results/<jobId>-<title-slug>``.
+required. The canonical per-job URL is ``.../jobs/results/<jobId>`` (Google
+redirects any title slug to it, so the bare id suffices).
 
 Config (a spec dict, or a list of them):
 
@@ -91,11 +91,6 @@ def _pull_html(cell) -> str:
     return "".join(str(x) for x in cell if isinstance(x, str) and x)
 
 
-def _slug(title: str) -> str:
-    s = re.sub(r"[^a-z0-9]+", "-", (title or "").lower()).strip("-")
-    return s
-
-
 def _date(v) -> str:
     """Field 12 is [epoch_seconds, nanos]; render as YYYY-MM-DD."""
     try:
@@ -134,8 +129,6 @@ def _row_job(row: list) -> Job | None:
                 break
 
     url = f"{LIST}{jid}"
-    if slug := _slug(title):
-        url = f"{url}-{slug}"
 
     return Job(
         source="google", company=company, id=f"goog-{jid}", title=title,
@@ -186,9 +179,7 @@ def google_board(spec: dict) -> list[Job]:
                 break
             page += 1
             if page > 1:
-                time.sleep(0.7)
-        if len(out) >= max_jobs:
-            break
+                time.sleep(0.7)  # be polite to Google's frontend
     return out[:max_jobs]
 
 
