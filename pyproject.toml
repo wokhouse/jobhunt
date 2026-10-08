@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jobhunt"
-version = "0.5.1"
+version = "0.5.2"
 description = "Fetch and match jobs from public ATS boards (Greenhouse, Lever, Ashby, Workable, Rippling, Workday) with pluggable boards, keyword filters, an optional LLM judge, and aggregator-based company discovery."
 readme = "README.md"
 license = { text = "MIT" }

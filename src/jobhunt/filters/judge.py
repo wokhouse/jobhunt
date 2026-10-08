@@ -13,6 +13,9 @@ Config:
   max_jobs   : judge at most this many jobs per run (default 200)
   excerpt    : content chars sent per job (default 2500)
   concurrency: parallel requests (default 4)
+  max_tokens : reply budget per judgement (default 1500; raise it for
+               reasoning models that spend tokens on thinking before the
+               JSON answer)
 
 Prompt is built from profile.judge_rubric (free text describing what you want),
 falling back to a generic rubric.
@@ -52,6 +55,7 @@ class LLMJudge(Filter):
         max_jobs = int(c.get("max_jobs", 200))
         excerpt = int(c.get("excerpt", 2500))
         conc = int(c.get("concurrency", 4))
+        max_tokens = int(c.get("max_tokens", 1500))
 
         rubric = DEFAULT_PROMPT
         if self.profile is not None and getattr(self.profile, "judge_rubric", ""):
@@ -68,7 +72,7 @@ class LLMJudge(Filter):
             )
             body = {"messages": [{"role": "system", "content": rubric},
                                  {"role": "user", "content": user}],
-                    "max_tokens": 1500, "temperature": 0}
+                    "max_tokens": max_tokens, "temperature": 0}
             if model:
                 body["model"] = model
             hdrs = {"Content-Type": "application/json"}
