@@ -8,7 +8,7 @@ UA = {"User-Agent": "Mozilla/5.0 (jobhunt/0.1; +https://github.com/wokhouse/jobh
 def get(url: str, *, method: str = "GET", body: dict | None = None,
         params: dict | None = None,
         headers: dict | None = None, timeout: int = 15,
-        tries: int = 3, sleep: float = 1.0, raw: bool = False):
+        tries: int = 3, raw: bool = False):
     """Fetch a URL with retries and linear backoff. Returns None on failure.
 
     JSON is parsed unless raw=True (RSS/HTML sources pass raw=True).
@@ -32,5 +32,5 @@ def get(url: str, *, method: str = "GET", body: dict | None = None,
                 return text if raw else json.loads(text)
         except Exception:
             if attempt < tries - 1:
-                time.sleep(sleep * (attempt + 1))
+                time.sleep(1.0 * (attempt + 1))
     return None

@@ -43,8 +43,6 @@ class JobicySource(Source):
                     title=j.get("title", ""),
                     url=url,
                     location=j.get("location", "") or "Remote",
-                    extra={"category": j.get("category", ""),
-                           "tech": j.get("tech") or []},
                 ))
                 if len(out) >= self.max_leads:
                     break

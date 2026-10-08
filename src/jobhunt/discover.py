@@ -8,7 +8,6 @@ company's own board (Greenhouse/Ashby/Lever/...), never the aggregator.
 from concurrent.futures import ThreadPoolExecutor
 
 from . import sources as _sources  # noqa: F401 (registers built-in sources)
-from .matcher import dedupe
 from .registry import SOURCES, load_plugins
 from .resolver import resolve_company
 
@@ -108,33 +107,3 @@ def _spec_key(entry):
     if isinstance(entry, str):
         return entry
     return tuple(sorted((k, str(v)) for k, v in entry.items()))
-
-
-def discover_and_fetch(profile):
-    """Full discovery pass: scrape -> resolve -> merge -> fetch first-party jobs.
-
-    Returns (jobs, stats).
-    """
-    leads = collect_leads(profile)
-    resolutions = resolve_leads(leads)
-    verified = {c: r for c, r in resolutions.items() if r.get("verified")}
-    specs = board_specs_from_resolutions(verified or resolutions)
-    added = merge_specs(profile, specs)
-
-    from .pipeline import build_boards
-    jobs = []
-    per_board: dict[str, int] = {}
-    for board in build_boards(profile):
-        got = board.fetch()
-        per_board[board.name] = per_board.get(board.name, 0) + len(got)
-        jobs.extend(got)
-    jobs = dedupe(jobs)
-    stats = {
-        "leads": len(leads),
-        "companies": len({l.company for l in leads}),
-        "resolved": len(resolutions),
-        "verified": len(verified),
-        "boards_added": added,
-        "per_board": per_board,
-    }
-    return jobs, stats, leads, resolutions

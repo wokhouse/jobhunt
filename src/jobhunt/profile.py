@@ -42,21 +42,18 @@ class Profile:
     boards: dict = field(default_factory=dict)   # {board_name: config}
     discover: dict = field(default_factory=dict)  # {source_name: config}
     filters: list[dict] = field(default_factory=list)
-    criteria_raw: dict = field(default_factory=dict)  # legacy 'criteria:' block
     judge_rubric: str = ""
 
     @classmethod
     def load(cls, path: str | Path) -> "Profile":
         raw = yaml.safe_load(Path(path).read_text()) or {}
         filters = raw.get("filters") or []
-        criteria_raw = raw.get("criteria") or {}
-        if not filters and criteria_raw:
-            filters = [{"name": "criteria", **criteria_raw}]
+        if not filters and raw.get("criteria"):
+            filters = [{"name": "criteria", **raw["criteria"]}]
         return cls(
             name=raw.get("name", Path(path).stem),
             boards=raw.get("boards") or {},
             discover=raw.get("discover") or {},
             filters=filters,
-            criteria_raw=criteria_raw,
             judge_rubric=raw.get("judge_rubric") or "",
         )

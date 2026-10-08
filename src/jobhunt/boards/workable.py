@@ -15,6 +15,18 @@ def _loc(j) -> str:
     return loc or ", ".join(x for x in (j.get("city"), j.get("state"), j.get("country")) if x)
 
 
+def _row(slug: str, j: dict) -> Job:
+    code = j.get("shortcode") or j.get("id")
+    return Job(
+        source="workable", company=slug, id=f"wk-{slug}-{code}",
+        title=j.get("title", ""),
+        url=j.get("url") or f"https://apply.workable.com/j/{code}",
+        location=_loc(j),
+        updated=j.get("published_on") or j.get("created_at") or "",
+        content=strip_tags(j.get("description") or "")[:MAX_CONTENT],
+    )
+
+
 def workable(slug: str) -> list[Job]:
     out, seen = [], set()
     # Primary: v3 paginated accounts API (not always exposed)
@@ -29,14 +41,7 @@ def workable(slug: str) -> list[Job]:
             if not code or code in seen:
                 continue
             seen.add(code)
-            out.append(Job(
-                source="workable", company=slug, id=f"wk-{slug}-{code}",
-                title=j.get("title", ""),
-                url=j.get("url") or f"https://apply.workable.com/j/{code}",
-                location=_loc(j),
-                updated=j.get("published_on") or j.get("created_at") or "",
-                content=strip_tags(j.get("description") or "")[:MAX_CONTENT],
-            ))
+            out.append(_row(slug, j))
         page += 1
     if out:
         return out
@@ -47,14 +52,7 @@ def workable(slug: str) -> list[Job]:
         if not code or code in seen:
             continue
         seen.add(code)
-        out.append(Job(
-            source="workable", company=slug, id=f"wk-{slug}-{code}",
-            title=j.get("title", ""),
-            url=j.get("url") or f"https://apply.workable.com/j/{code}",
-            location=_loc(j),
-            updated=j.get("published_on") or j.get("created_at") or "",
-            content=strip_tags(j.get("description") or "")[:MAX_CONTENT],
-        ))
+        out.append(_row(slug, j))
     return out
 
 

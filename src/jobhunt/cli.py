@@ -19,6 +19,14 @@ def _rows(jobs: list[Job]) -> list[dict]:
     return rows
 
 
+def _write_outputs(outdir: Path, res: dict) -> None:
+    outdir.mkdir(parents=True, exist_ok=True)
+    (outdir / "raw_jobs.json").write_text(
+        json.dumps([j.to_dict() for j in res["jobs"]], indent=1))
+    (outdir / "matches.json").write_text(
+        json.dumps(_rows(res["matches"]), indent=1))
+
+
 def cmd_fetch(args) -> int:
     p = Profile.load(args.profile)
     res = run_pipeline(p, fetch_only=True)
@@ -50,11 +58,7 @@ def cmd_run(args) -> int:
     p = Profile.load(args.profile)
     res = run_pipeline(p)
     outdir = Path(args.outdir)
-    outdir.mkdir(parents=True, exist_ok=True)
-    (outdir / "raw_jobs.json").write_text(
-        json.dumps([j.to_dict() for j in res["jobs"]], indent=1))
-    (outdir / "matches.json").write_text(
-        json.dumps(_rows(res["matches"]), indent=1))
+    _write_outputs(outdir, res)
     print(f"fetched {len(res['jobs'])} jobs; matched {len(res['matches'])} "
           f"-> {outdir}/matches.json")
     return 0
@@ -100,9 +104,7 @@ def cmd_discover(args) -> int:
         return 1
 
     leads = collect_leads(p)
-    companies = {}
-    for lead in leads:
-        companies.setdefault(lead.company, lead)
+    companies = {lead.company for lead in leads}
     resolutions = resolve_leads(leads)
     verified = {c: r for c, r in resolutions.items() if r.get("verified")}
 
@@ -138,7 +140,7 @@ def cmd_discover(args) -> int:
     prof_out = {
         "name": f"{p.name}-discovered",
         "boards": merged,
-        "filters": p.filters or [{"name": "criteria", **p.criteria_raw}],
+        "filters": p.filters or [{"name": "criteria"}],
     }
     if p.judge_rubric:
         prof_out["judge_rubric"] = p.judge_rubric
@@ -156,10 +158,7 @@ def cmd_discover(args) -> int:
         merge_specs(p, specs)
         from .pipeline import run_pipeline
         res = run_pipeline(p)
-        (outdir / "raw_jobs.json").write_text(
-            json.dumps([j.to_dict() for j in res["jobs"]], indent=1))
-        (outdir / "matches.json").write_text(
-            json.dumps(_rows(res["matches"]), indent=1))
+        _write_outputs(outdir, res)
         print(f"fetched {len(res['jobs'])} jobs; matched {len(res['matches'])} "
               f"-> {outdir}/matches.json")
     return 0

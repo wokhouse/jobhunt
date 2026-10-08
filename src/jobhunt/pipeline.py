@@ -15,7 +15,7 @@ def build_stages(profile) -> list[Filter]:
     Defaults to [criteria] when absent. 'judge' is shorthand for llm_judge.
     """
     load_plugins()
-    specs = profile.filters or [{"name": "criteria", **profile.criteria_raw}]
+    specs = profile.filters or [{"name": "criteria"}]
     stages = []
     for spec in specs:
         spec = dict(spec)
@@ -42,26 +42,21 @@ def build_boards(profile) -> list[Board]:
 
 def run_pipeline(profile, *, fetch_only=False, match_only=False,
                  raw_jobs: list[Job] | None = None) -> dict:
-    """Returns {jobs, matches, rejected, per_board}."""
+    """Returns {jobs, matches, rejected}."""
     jobs: list[Job] = []
-    per_board: dict[str, int] = {}
     if not match_only:
         for board in build_boards(profile):
-            got = board.fetch()
-            per_board[board.name] = per_board.get(board.name, 0) + len(got)
-            jobs.extend(got)
+            jobs.extend(board.fetch())
     else:
         jobs = raw_jobs or []
-        per_board["(from cache)"] = len(jobs)
 
     jobs = dedupe(jobs)
     if fetch_only:
-        return {"jobs": jobs, "matches": [], "rejected": {}, "per_board": per_board}
+        return {"jobs": jobs, "matches": [], "rejected": {}}
 
     rejected: dict[str, str] = {}
     current = jobs
     for stage in build_stages(profile):
         current, verdicts = stage.filter(current)
         rejected.update(verdicts)
-    return {"jobs": jobs, "matches": current, "rejected": rejected,
-            "per_board": per_board}
+    return {"jobs": jobs, "matches": current, "rejected": rejected}

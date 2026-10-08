@@ -45,6 +45,5 @@ class WwrSource(Source):
                 title=title,
                 url=ats.group(1) if ats else link,
                 location="Remote",
-                extra={"direct_ats_url": ats.group(1) if ats else ""},
             ))
         return out

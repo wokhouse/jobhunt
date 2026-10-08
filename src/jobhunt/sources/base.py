@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import re
 
 
@@ -16,7 +16,6 @@ class Lead:
     title: str
     url: str                # aggregator listing URL (evidence only)
     location: str = ""
-    extra: dict = field(default_factory=dict)
 
 
 def slugify(name: str) -> str:

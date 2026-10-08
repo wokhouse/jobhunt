@@ -34,9 +34,6 @@ class RemotiveSource(Source):
                     title=j.get("title", ""),
                     url=j.get("application_url") or j.get("url", ""),
                     location=j.get("candidate_required_location", "") or "Remote",
-                    extra={"website": j.get("company_website", ""),
-                           "category": j.get("category", ""),
-                           "tags": j.get("tags") or []},
                 ))
                 if len(out) >= self.max_leads:
                     break

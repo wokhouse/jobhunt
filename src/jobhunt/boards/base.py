@@ -19,16 +19,7 @@ class Board(ABC):
 
 
 def slug_list(config) -> list[str]:
-    """Normalize slug-board config: list of strings, list of {slug: ...},
-    or {slugs: [...]}."""
-    if isinstance(config, dict):
-        config = config.get("slugs") or []
+    """Normalize slug-board config: a string or a list of strings."""
     if isinstance(config, str):
         config = [config]
-    out = []
-    for c in config or []:
-        if isinstance(c, str):
-            out.append(c)
-        elif isinstance(c, dict) and c.get("slug"):
-            out.append(c["slug"])
-    return out
+    return [c for c in config or [] if isinstance(c, str)]

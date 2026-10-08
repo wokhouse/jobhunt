@@ -33,8 +33,6 @@ class HimalayasSource(Source):
                     title=j.get("title", ""),
                     url=j.get("applicationLink") or j.get("guid", ""),
                     location=j.get("location", "") or "Remote",
-                    extra={"salary": f"{j.get('minSalary', '')}-{j.get('maxSalary', '')}",
-                           "seniority": j.get("seniority", "")},
                 ))
                 if len(out) >= self.max_leads:
                     break
